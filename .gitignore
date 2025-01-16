@@ -1,0 +1,59 @@
+# Laravel
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+/.phpunit.cache
+
+# IDE
+/.idea
+/.vscode
+/.fleet
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build files
+*.zip
+*.rar
+*.tar
+*.gz
+
+# Specific project files
+modules_statuses.json
+vite.config.js.timestamp-*
+*.mjs
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Автоматическая обработка окончаний строк для всех текстовых файлов
+* text=auto
+
+# Принудительно использовать LF для конкретных типов файлов
+*.php text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
