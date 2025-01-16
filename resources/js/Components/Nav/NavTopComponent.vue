@@ -15,7 +15,7 @@
                             <img :src="`/storage/`+setting.software_logo_white" alt=""  class="h-8 mr-3 hidden dark:block" />
                         </div>
                         <div class="block sm:hidden">
-                            <img :src="`/storage/`+setting.software_favicon" class="h-10 mr-3" alt="" />
+                            <img :src="`/storage/`+setting.software_logo_white" class="h-10 mr-3" alt="" />
                         </div>
                         <p class="text-2xl font-bold">{{ setting?.software_name }}</p>
                     </a>
@@ -559,7 +559,12 @@ export default {
         }
     },
     unmounted() {
-     
+        const backdrop = document.querySelector('[modal-backdrop]');
+        const modalProfile = document.getElementById('modalProfileEl');
+        if (backdrop && modalProfile) {
+            backdrop.remove();
+            modalProfile.remove();
+        }
 
     },
     mounted() {
@@ -576,7 +581,7 @@ export default {
             backdropClasses: 'bg-gray-700 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40',
             closable: false,
             onHide: () => {
-
+                
             },
             onShow: () => {
 

@@ -12,15 +12,17 @@ export const useChatStore = defineStore('chat', {
             this.isOpen = !this.isOpen;
         },
         async sendMessage() {
+            if(!this.message) return;
             const response = await HttpApi.post('/chat/send', {
                 message: this.message,
                 chat_id: null
             });
             this.messages.push(response.data.message);
+            this.message = '';
         },
         async getChatMessages() {
             const response = await HttpApi.get(`/chat/user/messages`);
-            this.messages = response.data.messages;
+            this.messages = response.data.messages || [];
         }
     }
 });

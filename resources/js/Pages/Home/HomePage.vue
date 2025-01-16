@@ -240,10 +240,12 @@ export default {
         }
     },
     setup(props) {
+        const authStore = useAuthStore();
         const ckCarouselOriginals = ref(null)
 
         onMounted(() => {
-            if(this.isAuthenticated) {
+
+            if(authStore.isAuth) {
                 HttpApi.get('new-visit');
             }
         });

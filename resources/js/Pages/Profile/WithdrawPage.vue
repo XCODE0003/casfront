@@ -53,6 +53,7 @@ const setting = {
                         <div class="flex flex-col items-center">
                             <h1 class="dark:text-white text-black  text-2xl font-bold">Withdrawals are disabled</h1>
                             <p class="dark:text-white text-black text-sm">Please complete verification to enable withdrawals</p>
+                            <RouterLink to="/profile/verification" class="ui-button-blue mt-2 rounded-lg flex items-center justify-center">Complete verification</RouterLink>
                         </div>
                     </div>
                     <div

@@ -23,7 +23,7 @@ class AffiliateController extends Controller
         return response()->json([
             'status'        => true,
             'code'          => auth('api')->user()->inviter_code,
-            'url'           => config('app.url') . '/register?code=' . auth('api')->user()->inviter_code,
+            'url'           => request()->getHttpHost() . '/register?code=' . auth('api')->user()->inviter_code,
             'indications'   => $indications,
             'wallet'        => $walletDefault
         ]);
