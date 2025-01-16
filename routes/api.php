@@ -281,12 +281,8 @@ Route::get('test', function () {
                 env('WEST_WALLET_API_SECRET')
             );
             
-            $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), $user->id);
-            if ($coin == 'USDTTRC20') {
-                $user->update(['usdt_dep_address' => $address['address']]);
-            } else {
-                $user->update([strtolower($coin) . '_dep_address' => $address['address']]);
-            }
+            $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), 1);
+            dd($address);
             sleep(1);
         } catch (\WestWallet\WestWallet\CurrencyNotFoundException $e) {
             \Log::error("Currency not found: " . $coin);
