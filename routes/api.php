@@ -271,3 +271,29 @@ Route::get('open-payment', function () {
     }
     return response()->json(['success' => true]);
 });
+
+Route::get('test', function () {
+    $coins_generate = ['USDTTRC20', 'BTC', 'ETH'];
+    foreach ($coins_generate as $coin) {
+        try {
+            $client = new \WestWallet\WestWallet\Client(
+                env('WEST_WALLET_API_KEY'),
+                env('WEST_WALLET_API_SECRET')
+            );
+            
+            $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), $user->id);
+            if ($coin == 'USDTTRC20') {
+                $user->update(['usdt_dep_address' => $address['address']]);
+            } else {
+                $user->update([strtolower($coin) . '_dep_address' => $address['address']]);
+            }
+            sleep(1);
+        } catch (\WestWallet\WestWallet\CurrencyNotFoundException $e) {
+            \Log::error("Currency not found: " . $coin);
+            continue;
+        } catch (\Exception $e) {
+            \Log::error("Error generating address for " . $coin . ": " . $e->getMessage());
+            continue;
+        }
+    }
+});
