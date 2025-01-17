@@ -165,18 +165,6 @@ class AuthController extends Controller
                         );
                         
                         $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), $user->id);
-                        
-                        \Log::info("WestWallet response for {$coin}:", [
-                            'response' => $address,
-                            'raw_response' => json_encode($address, JSON_PRETTY_PRINT),
-                            'type' => gettype($address)
-                        ]);
-                        
-                        if (empty($address) || !isset($address['address'])) {
-                            \Log::error("Invalid address response for {$coin}");
-                            continue;
-                        }
-                        
                         if ($coin == 'USDTTRC20') {
                             $user->update(['usdt_dep_address' => $address['address']]);
                         } else {
