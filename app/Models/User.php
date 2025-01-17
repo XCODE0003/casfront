@@ -51,6 +51,7 @@ class User extends Authenticatable implements FilamentUser, JWTSubject
         'affiliate_baseline',
         'is_demo_agent',
         'is_admin',
+        'is_verification',
         'language',
         'role_id',
     ];

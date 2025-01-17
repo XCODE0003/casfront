@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->tinyInteger('role_id')->default(3);
             $table->integer('win_chance')->default(75);
+            $table->boolean('is_verification')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

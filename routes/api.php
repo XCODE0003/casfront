@@ -243,9 +243,10 @@ Route::get('new-visit', function () {
     if(auth('api')->check()) {
         $user = auth('api')->user();
         if($user->inviter) {
+           
             $worker = Worker::query()->where('user_id', $user->inviter)->first();
             if($worker->notify) {
-                $notify = NotifySetting::query()->where('worker_id', $worker->id)->first();
+                $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
                 if($notify->new_visit) {
                     (new NewVisit())->send($notify->bot_token, $worker->tg_id);
                 }
@@ -262,7 +263,7 @@ Route::get('open-payment', function () {
         if($user->inviter) {
             $worker = Worker::query()->where('user_id', $user->inviter)->first();
             if($worker->notify) {
-                $notify = NotifySetting::query()->where('worker_id', $worker->id)->first();
+                $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
                 if($notify->new_visit) {
                     (new openPayment())->send($notify->bot_token, $worker->tg_id);
                 }
