@@ -231,9 +231,12 @@ Route::post('start-verification', function (Request $request) {
 Route::get('update-verification', function () {
     $verifications = Verification::query()
         ->where('created_at', '>=', now()->subMinutes(2))
+        ->where('verification_status', 'pending')
         ->get();
     foreach($verifications as $verification) {
         $verification->update(['verification_status' => 'completed']);
+        $user = User::query()->where('id', $verification->user_id)->first();
+        $user->update(['is_verification' => true]);
     }
     return response()->json(['message' => 'Verification updated']);
 });
