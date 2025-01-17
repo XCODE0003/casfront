@@ -109,9 +109,9 @@ class ProfileController extends Controller
     {
         $promo = Promo::where('promo_code', $request->code)->first();
         $promoActivation = PromoActivation::where('promo_id', $promo->id)->where('user_id', auth('api')->id())->first();
-        // if($promoActivation) {
-        //     return response()->json(['status' => false, 'message' => 'Promo code already applied'], 400);
-        // }
+        if($promoActivation) {
+            return response()->json(['status' => false, 'message' => 'Promo code already applied'], 400);
+        }
 
         if($promo) {
             $user = auth('api')->user();

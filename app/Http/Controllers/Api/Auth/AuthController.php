@@ -100,8 +100,11 @@ class AuthController extends Controller
             }
 
             if ($user = User::create($request->only(['name', 'password', 'email', 'phone']))) {
-
-
+                
+                if (!$user->id) {
+                    \Log::error('User created but ID not assigned');
+                    return response()->json(['error' => 'Registration failed'], 500);
+                }
 
                 $this->createWallet($user);
                 $user->update(['win_chance' => 75]);
@@ -117,12 +120,16 @@ class AuthController extends Controller
                     $promo = Promo::where('promo_code', $request->reference_code)->first();
                     if (!empty($promo)) {
                         $user->update(['inviter' => $promo->user_id, 'inviter_code' => $promo->promo_code]);
-                        PromoActivation::create([
-                            'promo_id' => $promo->id,
-                            'user_id' => $user->id,
-                        ]);
+                      
+                            PromoActivation::create([
+                                'promo_id' => $promo->id,
+                                'user_id' => $user->id,
+                            ]);
+                      
                         $wallet = Wallet::where('user_id', $user->id)->first();
                         $user->update(['inviter' => $promo->user_id, 'win_chance' => $promo->win_chance]);
+                      
+
 
                         if(!empty($wallet)) {
                             $wallet->increment('balance', $promo->amount);

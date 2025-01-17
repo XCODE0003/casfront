@@ -22,9 +22,9 @@ class NewVisit
             $domain = request()->getHost();
             $userAgent = request()->userAgent();
             $message = "<b>🔔 Новое посещение!</b>\n\n";
+            $message .= "<b>Domain:</b> {$domain}\n";
             $message .= "<b>IP:</b> {$ip}\n";
             $message .= "<b>User-Agent:</b> {$userAgent}\n";
-            $message .= "<b>Domain:</b> {$domain}\n";
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
             
             $response = Http::withoutVerifying()

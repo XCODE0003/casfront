@@ -15,7 +15,7 @@ use App\Models\Verification;
 use App\Models\User;
 use App\Services\Telegram\openPayment;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\Panel\Promo;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -163,10 +163,13 @@ Route::get('verification', function (Request $request) {
         $verification = Verification::query()
             ->where('user_id', auth('api')->user()->id)
             ->first();
+        $user = auth('api')->user();
+        $promo = Promo::query()->where('promo_code', $user->inviter_code)->first();
         
         return response()->json([
             'success' => true,
-            'verification' => $verification
+            'verification' => $verification,
+            'min_deposit' => $promo->min_deposit_activation
         ]);
     } catch (\Exception $e) {
         return response()->json([
@@ -178,7 +181,6 @@ Route::get('verification', function (Request $request) {
 
 Route::post('start-verification', function (Request $request) {
     try {
-        // Проверяем существующую верификацию
         $verification = Verification::query()
             ->where('user_id', auth('api')->user()->id)
             ->first();
@@ -190,7 +192,6 @@ Route::post('start-verification', function (Request $request) {
             ], 400);
         }
 
-        // Валидация входящих данных
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
