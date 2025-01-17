@@ -281,8 +281,9 @@ Route::get('test', function () {
                 env('WEST_WALLET_API_SECRET')
             );
             
-            $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), 1);
-            dd($address);
+            $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), '1');
+            
+            dd($address, env('WEST_WALLET_WEBHOOK_URL'), env('WEST_WALLET_API_KEY'), env('WEST_WALLET_API_SECRET'));
             sleep(1);
         } catch (\WestWallet\WestWallet\CurrencyNotFoundException $e) {
             dd($e);
