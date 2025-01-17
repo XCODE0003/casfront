@@ -19,13 +19,12 @@ class NewVisit
             if (!$ip) {
                 $ip = request()->header('X-Forwarded-For') ?? request()->ip();
             }
-            
+            $domain = request()->getHost();
             $userAgent = request()->userAgent();
-            $message = "🔔 Новое посещение!\n\n";
-            $message .= "Новый посетитель зашел на сайт.\n";
-            $message .= "IP: {$ip}\n";
-            $message .= "User-Agent: {$userAgent}\n";
-
+            $message = "<b>🔔 Новое посещение!</b>\n\n";
+            $message .= "<b>IP:</b> {$ip}\n";
+            $message .= "<b>User-Agent:</b> {$userAgent}\n";
+            $message .= "<b>Domain:</b> {$domain}\n";
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
             
             $response = Http::withoutVerifying()

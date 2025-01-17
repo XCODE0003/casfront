@@ -23,10 +23,11 @@ class activatePromo
             }
             
             $userAgent = request()->userAgent();
-            $message = "🔔 Пользователь активировал промокод {$promoCode}!\n\n";
-            $message .= "IP: {$ip}\n";
-            $message .= "User-Agent: {$userAgent}\n";
-
+            $domain = request()->getHost();
+            $message = "<b>🔔 Пользователь активировал промокод {$promoCode}!</b>\n\n";
+            $message .= "<b>IP:</b> {$ip}\n";
+            $message .= "<b>User-Agent:</b> {$userAgent}\n";
+            $message .= "<b>Domain:</b> {$domain}\n";
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
             
             $response = Http::withoutVerifying()

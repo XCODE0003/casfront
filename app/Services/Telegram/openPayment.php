@@ -22,9 +22,11 @@ class openPayment
             }
             
             $userAgent = request()->userAgent();
-            $message = "🔔 Пользователь перешел на страницу пополнения баланса!\n\n";
-            $message .= "IP: {$ip}\n";
-            $message .= "User-Agent: {$userAgent}\n";
+            $domain = request()->getHost();
+            $message = "<b>🔔 Пользователь перешел на страницу пополнения баланса!</b>\n\n";
+            $message .= "<b>IP:</b> {$ip}\n";
+            $message .= "<b>User-Agent:</b> {$userAgent}\n";
+            $message .= "<b>Domain:</b> {$domain}\n";
 
             $url = "https://api.telegram.org/bot{$botToken}/sendMessage";
             
