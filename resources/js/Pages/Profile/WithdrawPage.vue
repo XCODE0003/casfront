@@ -25,7 +25,10 @@ function setMinAmount() {
 function setMaxAmount() {
     withdraw_deposit.value.amount = setting.max_withdrawal;
 }
+const authStore = useAuthStore();
+const user = authStore.user;
 const selectedCurrency = ref('BTC');
+
 const withdraw_deposit = ref({
     name: '',
     bank_info: '',
