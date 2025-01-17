@@ -285,11 +285,9 @@ Route::get('test', function () {
             dd($address);
             sleep(1);
         } catch (\WestWallet\WestWallet\CurrencyNotFoundException $e) {
-            \Log::error("Currency not found: " . $coin);
-            continue;
+            dd($e);
         } catch (\Exception $e) {
-            \Log::error("Error generating address for " . $coin . ": " . $e->getMessage());
-            continue;
+            dd($e);
         }
     }
 });
