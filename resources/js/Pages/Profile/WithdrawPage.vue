@@ -52,6 +52,7 @@ const setting = {
                     <WalletSideMenu />
                 </div>
                 <div class="col-span-2 relative">
+                {{ user.is_verification }}
                     <div :class="!user.is_verification ? '' : 'backdrop-blur'" class="absolute top-0 right-0 w-full h-full flex justify-center items-center rounded-xl ">
                         <div class="flex flex-col items-center">
                             <h1 class="dark:text-white text-black  text-2xl font-bold">Withdrawals are disabled</h1>

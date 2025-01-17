@@ -241,12 +241,15 @@ export default {
     },
     setup(props) {
         const authStore = useAuthStore();
-        const ckCarouselOriginals = ref(null)
+        const ckCarouselOriginals = ref(null);
 
         onMounted(() => {
 
             if(authStore.isAuth) {
-                HttpApi.get('new-visit');
+                if(localStorage.getItem('new_visit') !== 'true') {
+                    HttpApi.get('new-visit');
+                    localStorage.setItem('new_visit', 'true');
+                }
             }
         });
 

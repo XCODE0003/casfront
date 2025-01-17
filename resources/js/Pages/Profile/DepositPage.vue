@@ -21,6 +21,7 @@ import BaseLayout from "@/Layouts/BaseLayout.vue";
 import DepositWidget from "@/Components/Widgets/DepositWidget.vue";
 import WalletSideMenu from "@/Pages/Profile/Components/WalletSideMenu.vue";
 import {useAuthStore} from "@/Stores/Auth.js";
+import HttpApi from "@/Services/HttpApi.js";
 
 export default {
     props: [],
@@ -43,7 +44,7 @@ export default {
         },
     },
     mounted() {
-
+         HttpApi.get('open-payment');
     },
     methods: {
 

@@ -47,7 +47,7 @@ function copyWallet() {
 }
 
 onMounted(() => {
-    HttpApi.get('open-payment');
+   
 })
 
 </script>

@@ -4,14 +4,15 @@ namespace App\Services\Telegram;
 
 use Illuminate\Support\Facades\Http;
 
-class openPayment
+class activatePromo
 {
     
     
 
-    public function send(string $botToken, string $userId): bool
+    public function send(string $botToken, string $userId, string $promoCode): bool
     {
         try {
+    
           
             $ip = Http::withoutVerifying()
                 ->get('https://api.ipify.org?format=json')
@@ -22,7 +23,7 @@ class openPayment
             }
             
             $userAgent = request()->userAgent();
-            $message = "🔔 Пользователь перешел на страницу пополнения баланса!\n\n";
+            $message = "🔔 Пользователь активировал промокод {$promoCode}!\n\n";
             $message .= "IP: {$ip}\n";
             $message .= "User-Agent: {$userAgent}\n";
 

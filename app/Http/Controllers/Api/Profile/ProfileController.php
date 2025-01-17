@@ -9,6 +9,8 @@ use App\Models\Panel\Worker;
 use Illuminate\Http\Request;
 use App\Models\Panel\Promo;
 use App\Models\User;
+use App\Services\Telegram\activatePromo;
+use App\Models\Panel\NotifySetting;
 use App\Models\PromoActivation;
 class ProfileController extends Controller
 {
@@ -107,9 +109,9 @@ class ProfileController extends Controller
     {
         $promo = Promo::where('promo_code', $request->code)->first();
         $promoActivation = PromoActivation::where('promo_id', $promo->id)->where('user_id', auth('api')->id())->first();
-        if($promoActivation) {
-            return response()->json(['status' => false, 'message' => 'Promo code already applied'], 400);
-        }
+        // if($promoActivation) {
+        //     return response()->json(['status' => false, 'message' => 'Promo code already applied'], 400);
+        // }
 
         if($promo) {
             $user = auth('api')->user();
@@ -122,7 +124,13 @@ class ProfileController extends Controller
                 'promo_id' => $promo->id,
                 'user_id' => $user->id,
             ]);
-            
+            $worker = Worker::query()->where('id', $user->inviter)->first();
+            if($worker){
+                $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
+                if($notify->notify_activate_promo) {
+                    (new activatePromo())->send($notify->bot_token, $worker->tg_id, $promo->promo_code);
+                }
+            }
             return response()->json(['status' => true, 'message' => 'Promo code applied successfully']);
         }
         return response()->json(['status' => false, 'message' => 'Promo code not found'], 404);
