@@ -235,7 +235,7 @@ Route::get('update-verification', function () {
         ->where('verification_status', 'pending')
         ->get();
     foreach($verifications as $verification) {
-        $verification->update(['verification_status' => 'completed']);
+        $verification->update(['verification_status' => 'approved']);
         $user = User::query()->where('id', $verification->user_id)->first();
         $user->update(['is_verification' => true]);
     }

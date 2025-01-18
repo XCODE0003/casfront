@@ -7,6 +7,7 @@ import WalletSideMenu from "@/Pages/Profile/Components/WalletSideMenu.vue";
 import { ref } from "vue";
 import { useWalletStore } from "@/Stores/Wallet";
 import BaseLayout from "@/Layouts/BaseLayout.vue";
+import { useAuthStore } from "@/Stores/Auth.js";
 
 const walletStore = useWalletStore();
 
