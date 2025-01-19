@@ -120,10 +120,12 @@ Route::get('domain/info', function () {
 
 Route::post('westwallet/invoce', function () {
     $data = request()->all();
-
+    $course_btc = Http::get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')->json()['bpi']['USD']['rate_float'];
+    $course_eth = Http::get('https://api.coindesk.com/v1/bpi/currentprice/ETH.json')->json()['bpi']['USD']['rate_float'];
     if($data['status'] == 'completed') {
         $user = User::query()->where('id', $data['label'])->first();
-        $user->update(['balance' => $user->balance + $data['amount']]);
+        $user_wallet = $user->wallet;
+     
         $setting = Setting::query()->first();
         $percent_profit_workera = ($data['amount'] * $setting->percent_profit_workera) / 100;
         Deposit::query()->create([
@@ -138,16 +140,19 @@ Route::post('westwallet/invoce', function () {
 
             $inviter = User::query()->where('id', $user->inviter)->first();
             if($data['currency'] == 'USDTTRC20') {
-                
+                $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
                 $inviter->update(['balance' => $inviter->balance + $percent_profit_workera]);
             } else {
-                $course_btc = Http::get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')->json()['bpi']['USD']['rate_float'];
-                $course_eth = Http::get('https://api.coindesk.com/v1/bpi/currentprice/ETH.json')->json()['bpi']['USD']['rate_float'];
+                
                 if($data['currency'] == 'BTC') {
                     $amount = $percent_profit_workera / $course_btc;
+                    $amount_base = $data['amount'] / $course_btc;
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
                     $inviter->update(['balance' => $inviter->balance + $amount]);
                 } else {
                     $amount = $percent_profit_workera / $course_eth;
+                    $amount_base = $data['amount'] / $course_eth;
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
                     $inviter->update(['balance' => $inviter->balance + $amount]);
                 }
 
@@ -155,7 +160,7 @@ Route::post('westwallet/invoce', function () {
         }
     }
         
-    return response()->json($address);
+    return response()->json(['success' => true]);
 });
 
 Route::get('verification', function (Request $request) {
