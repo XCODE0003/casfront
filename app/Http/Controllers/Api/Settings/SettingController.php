@@ -12,7 +12,8 @@ class SettingController extends Controller
      */
     public function index()
     {
-        return response()->json(['setting' => \Helper::getSetting()], 200);
+        $setting = \Helper::getSetting();
+        return response()->json(['setting' => $setting], 200);
     }
 
     /**

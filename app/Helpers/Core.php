@@ -13,6 +13,7 @@ use App\Models\SubAffiliate;
 use App\Models\User;
 use App\Models\Vip;
 use App\Models\VipUser;
+use App\Models\Panel\Domain;
 use App\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -783,7 +784,13 @@ class Core
                 'stripe_is_enable',
                 'disable_spin',
             )->first();
-
+            $domain = request()->getHost();
+            $settingDomain = Domain::where('domain', $domain)->first();
+        
+            if (!empty($settingDomain)) {
+                $setting->software_name = $settingDomain->title;
+            }
+            
             Cache::put('setting', $setting);
         }
 

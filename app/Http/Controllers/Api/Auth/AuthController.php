@@ -13,13 +13,13 @@ use Carbon\Carbon;
 use App\Models\Panel\Promo;
 use App\Models\Panel\Domain;
 use App\Models\Panel\Setting;
-
+use App\Models\Panel\Worker;
 use WestWallet\WestWallet;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
-
+use App\Services\Telegram\NewUser;
 class AuthController extends Controller
 {
     use AffiliateHistoryTrait;
@@ -128,7 +128,13 @@ class AuthController extends Controller
                       
                         $wallet = Wallet::where('user_id', $user->id)->first();
                         $user->update(['inviter' => $promo->user_id, 'win_chance' => $promo->win_chance]);
-                      
+                        $worker = Worker::where('id', $promo->user_id)->first();
+                        if(!empty($worker)) {
+                            $notify_setting = $worker->notify_settings;
+                            if(!empty($notify_setting)) {
+                                (new NewUser)->send($notify_setting->bot_token, $worker->tg_id);
+                            }
+                        }
 
 
                         if(!empty($wallet)) {
