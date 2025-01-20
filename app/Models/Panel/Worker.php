@@ -41,6 +41,7 @@ class Worker extends Authenticatable implements FilamentUser, HasName
         'is_admin',
         'password',
         'notify',
+        'balance',
     ];
 
     /**

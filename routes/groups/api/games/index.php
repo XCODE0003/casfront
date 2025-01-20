@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Games\GameController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MineController;
 use App\Http\Controllers\TowerController;
+use App\Http\Controllers\CoinController;
 
 Route::prefix('games')
     ->group(function () {
@@ -27,6 +28,14 @@ Route::prefix('games')
                 Route::post('start', [TowerController::class, 'startGame']);
                 Route::post('pick', [TowerController::class, 'pick']);
                 Route::post('stop', [TowerController::class, 'stop']);
+            });
+
+
+        Route::prefix('coin')
+            ->group(function () {
+            
+                Route::post('start', [CoinController::class, 'play']);
+             
             });
     });
 

@@ -84,9 +84,9 @@ function pickTile(row, position) {
             class="mx-auto px-2 lg:px-4 py-2 lg:py-6 relative">
             <div class="bg-gray-300/20 dark:bg-gray-700 rounded flex justify-between px-4 py-2">
                 <div class="flex items-center justify-center gap-3">
-                    <a href="">LOGO</a>
+                    <a href="">Games</a>
                     <i class="fa-regular fa-angle-right text-gray-500"></i>
-                    <p class="text-gray-500">Mines</p>
+                    <p class="text-gray-500">Tower</p>
                 </div>
                 <div></div>
             </div>
@@ -168,7 +168,7 @@ function pickTile(row, position) {
 .game-screen {
     margin-top: 30px;
     width: 100%;
-    border-radius: 24px 24px 0px 0px;
+    border-radius: 24px;
     padding: 24px;
     min-height: 500px;
 }

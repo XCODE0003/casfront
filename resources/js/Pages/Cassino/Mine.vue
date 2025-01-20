@@ -6,10 +6,7 @@ import GameLayout from "@/Layouts/GameLayout.vue";
 import LoadingComponent from "@/Components/UI/LoadingComponent.vue";
 import HttpApi from "@/Services/HttpApi.js";
 import { useMinesStore } from "@/Stores/Games/MinesStore.js";
-// При использовании <script setup> не нужно явно определять компоненты
-// Они автоматически доступны в шаблоне
 
-// Состояние
 const isLoading = ref(true);
 const game = ref(null);
 const gameUrl = ref(null);
@@ -78,14 +75,14 @@ function toggleGame() {
             class="mx-auto px-2 lg:px-4 py-2 lg:py-6 relative">
             <div class="bg-gray-300/20 dark:bg-gray-700 rounded flex justify-between px-4 py-2">
                 <div class="flex items-center justify-center gap-3">
-                    <a href="">LOGO</a>
+                    <a href="">Games</a>
                     <i class="fa-regular fa-angle-right text-gray-500"></i>
                     <p class="text-gray-500">Mines</p>
                 </div>
                 <div></div>
             </div>
 
-            <div class="game-screen">
+            <div class="game-screen rounded-xl">
                 <div class="flex h-full flex-col mx-auto items-center gap-4" style="max-width: 400px">
                     <div class="grid flex-shrink-0 h-full grid-cols-5 gap-2 game-tiles"
                         :class="minesStore.activeGame ? '_active' : ''" style="margin: 0 auto; min-height: 400px">
@@ -165,73 +162,7 @@ function toggleGame() {
                 </div>
             </div>
 
-            <div class="flex justify-between items-center w-full px-3 py-2 bg-gray-300/20 dark:bg-gray-800 game-footer">
-                <div class="flex items-center gap-3 text-gray-500">
-                    <button class="text-gray-500">
-                        <i class="fa-solid fa-star mr-2"></i>
-                        0
-                    </button>
-                    <button>
-                        <i class="fa-solid fa-heart mr-2"></i>
-                        0
-                    </button>
-                    <button>
-                        <i class="fa-regular fa-eyes mr-2"></i>
-                        0
-                    </button>
-                </div>
-                <div class="text-gray-500 flex items-center gap-3">
-                    <div>
-                        <button data-tooltip-target="tooltip-mode-movie" type="button" @click="modeMovie = !modeMovie">
-                            <i class="fa-solid fa-window-restore"></i>
-                        </button>
-                        <div id="tooltip-mode-movie" role="tooltip"
-                            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Режим фильма
-                            <div class="tooltip-arrow" data-popper-arrow></div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <button data-tooltip-target="tooltip-mode-expand" type="button" @click="toggleFullscreen">
-                            <i class="fa-sharp fa-solid fa-expand"></i>
-                        </button>
-                        <div id="tooltip-mode-expand" role="tooltip"
-                            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                            Полноэкранный режим
-                            <div class="tooltip-arrow" data-popper-arrow></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-4 border-b border-gray-200 dark:border-gray-700 mt-3 lg:mt-16">
-                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400"
-                    id="tabs-info" role="tablist">
-                    <li class="me-2" role="presentation">
-                        <button
-                            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
-                            id="default-tab" type="button" role="tab">
-                            Mines
-                        </button>
-                    </li>
-                    <li class="me-2" role="presentation">
-                        <button
-                            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
-                            id="description-tab" type="button" role="tab">
-                            Описание
-                        </button>
-                    </li>
-                    <li class="me-2" role="presentation">
-                        <button
-                            class="inline-block rounded-t-lg border-b-2 border-transparent p-4 hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
-                            id="reviews-tab" type="button" role="tab">
-                            Отзывы
-                        </button>
-                    </li>
-                </ul>
-            </div>
-
+ 
             <div id="tabContentExample">
                 <div class="hidden rounded-lg bg-gray-50 p-4 dark:bg-gray-800" id="default-panel" role="tabpanel">
                     <div class="flex w-full">
@@ -292,7 +223,7 @@ function toggleGame() {
 .game-screen {
     margin-top: 30px;
     width: 100%;
-    border-radius: 24px 24px 0px 0px;
+    border-radius: 24px ;
     padding: 24px;
     min-height: 500px;
 }

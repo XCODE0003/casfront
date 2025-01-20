@@ -53,13 +53,16 @@ export const useCoinStore = defineStore('coin', {
             this.activeGame = true;
 
             try {
-                const result = 'tails';
+                useWalletStore().fetchWallet();
+                const response = await HttpApi.post('games/coin/start', {
+                    bet: this.game_settings.bet,
+                    coin: this.game_settings.coin,
+                });
+                const result = response.data.coin_result;
 
                 await this.animationFunction(result);
 
-                if (result === this.game_settings.coin) {
-                } else {
-                }
+                useWalletStore().fetchWallet();
             } catch (error) {
                 console.log(error);
             } finally {

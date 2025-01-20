@@ -32,7 +32,7 @@ onMounted(() => {
 
 <template>
     <GameLayout>
-        <div class="h-screen w-screen max-w-[900px] rounded-xl max-h-[550px]  mt-24 mx-auto">
+        <div class="h-screen w-full max-w-[1200px] rounded-xl max-h-[750px]  mt-24 mx-auto">
             <iframe class="rounded-xl" :src="game" width="100%" height="100%"></iframe>
         </div>
     </GameLayout>

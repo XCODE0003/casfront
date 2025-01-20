@@ -39,12 +39,13 @@ onMounted(() => {
 
 <template>
     <GameLayout>
-        <div style="max-width: 600px;" class="mx-auto px-2 lg:px-4 py-2 lg:py-6 relative">
+        <div style="max-width: 700px;" class="mx-auto px-2 lg:px-4 py-2 lg:py-6 relative">
             <div class="bg-gray-300/20 dark:bg-gray-700 rounded flex justify-between px-4 py-2">
                 <div class="flex items-center justify-center gap-3">
-                    <a href="">LOGO</a>
+                    <a href="">Games</a>
                     <i class="fa-regular fa-angle-right text-gray-500"></i>
-                    <p class="text-gray-500">Mines</p>
+                    <p class="text-gray-500">Coin Flip</p>
+                    <p class="text-gray-500">Coin Flip</p>
                 </div>
                 <div></div>
             </div>

@@ -9,8 +9,10 @@ use App\Models\Deposit;
 use App\Models\Panel\NotifySetting;
 use Illuminate\Support\Facades\Http;
 use App\Services\Telegram\NewVisit;
+use App\Models\Panel\SettingsWorker;
+use App\Services\Telegram\NewDeposit;
 use App\Models\Panel\Worker;
-use App\Models\Setting;
+
 use App\Models\Verification;
 use App\Models\User;
 use App\Services\Telegram\openPayment;
@@ -120,14 +122,34 @@ Route::get('domain/info', function () {
 
 Route::post('westwallet/invoce', function () {
     $data = request()->all();
-    $course_btc = Http::get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')->json()['bpi']['USD']['rate_float'];
-    $course_eth = Http::get('https://api.coindesk.com/v1/bpi/currentprice/ETH.json')->json()['bpi']['USD']['rate_float'];
-    if($data['status'] == 'completed') {
+    try {
+        $course_btc = Http::withoutVerifying()
+            ->get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')
+            ->json()['bpi']['USD']['rate_float'];
+
+        $eth_response = Http::withoutVerifying()
+            ->get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
+            ->json();
+
+        if (!isset($eth_response['ethereum']) || !isset($eth_response['ethereum']['usd'])) {
+            throw new \Exception('Invalid ETH API response structure');
+        }
+
+        $course_eth = $eth_response['ethereum']['usd'];
+    } catch (\Exception $e) {
+        \Log::error('Error getting crypto rates: ' . $e->getMessage());
+        $course_btc = 41000; // значение по умолчанию
+        $course_eth = 2200;  // значение по умолчанию
+    }
+
+
+    if ($data['status'] == 'completed') {
         $user = User::query()->where('id', $data['label'])->first();
         $user_wallet = $user->wallet;
-     
-        $setting = Setting::query()->first();
-        $percent_profit_workera = ($data['amount'] * $setting->percent_profit_workera) / 100;
+
+        $setting = SettingsWorker::query()->first();
+    
+        $percent_profit_workera = ($data['amount'] * $setting->percent_profit_worker) / 100;
         Deposit::query()->create([
             'user_id' => $user->id,
             'amount' => $data['amount'],
@@ -136,30 +158,42 @@ Route::post('westwallet/invoce', function () {
             'status' => 'completed',
             'payment_id' => $data['id']
         ]);
-        if($user->inviter) {
 
-            $inviter = User::query()->where('id', $user->inviter)->first();
-            if($data['currency'] == 'USDTTRC20') {
+        if ($user->inviter) {
+
+            $inviter = Worker::query()->where('id', $user->inviter)->first();
+
+            if ($data['currency'] == 'USDTTRC20') {
                 $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
-                $inviter->update(['balance' => $inviter->balance + $percent_profit_workera]);
+                $inviter->balance = $inviter->balance + $percent_profit_workera;
+                $inviter->save();
             } else {
-                
-                if($data['currency'] == 'BTC') {
-                    $amount = $percent_profit_workera / $course_btc;
-                    $amount_base = $data['amount'] / $course_btc;
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
-                    $inviter->update(['balance' => $inviter->balance + $amount]);
-                } else {
-                    $amount = $percent_profit_workera / $course_eth;
-                    $amount_base = $data['amount'] / $course_eth;
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
-                    $inviter->update(['balance' => $inviter->balance + $amount]);
-                }
 
+                if ($data['currency'] == 'BTC') {
+                    $amount = $percent_profit_workera * $course_btc;
+                    $amount_base = $data['amount'] * $course_btc;
+
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+
+                    $inviter->update(['balance' => (float)($inviter->balance + $amount)]);
+                    
+                } else {
+                    $amount = $percent_profit_workera * $course_eth;
+                    $amount_base = $data['amount'] * $course_eth;
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                    $inviter->balance = $inviter->balance + $amount;
+                    $inviter->save();
+                }
+            }
+
+            $notify_settings = NotifySetting::query()->where('user_id', $inviter->id)->first();
+            if ($notify_settings->notify_new_payment) {
+                (new NewDeposit())->send($notify_settings->bot_token, $inviter->tg_id, $data['amount'], $data['currency'], $user->email);
             }
         }
     }
-        
+
+
     return response()->json(['success' => true]);
 });
 
@@ -170,7 +204,7 @@ Route::get('verification', function (Request $request) {
             ->first();
         $user = auth('api')->user();
         $promo = Promo::query()->where('promo_code', $user->inviter_code)->first();
-        
+
         return response()->json([
             'success' => true,
             'verification' => $verification,
@@ -189,7 +223,7 @@ Route::post('start-verification', function (Request $request) {
         $verification = Verification::query()
             ->where('user_id', auth('api')->user()->id)
             ->first();
-            
+
         if (!empty($verification)) {
             return response()->json([
                 'success' => false,
@@ -225,7 +259,6 @@ Route::post('start-verification', function (Request $request) {
             'success' => true,
             'message' => 'Verification started successfully'
         ], 201);
-
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
@@ -239,7 +272,7 @@ Route::get('update-verification', function () {
         ->where('created_at', '>=', now()->subMinutes(2))
         ->where('verification_status', 'pending')
         ->get();
-    foreach($verifications as $verification) {
+    foreach ($verifications as $verification) {
         $verification->update(['verification_status' => 'approved']);
         $user = User::query()->where('id', $verification->user_id)->first();
         $user->update(['is_verification' => true]);
@@ -250,19 +283,18 @@ Route::get('update-verification', function () {
 
 Route::get('new-visit', function () {
 
-    
-    if(auth('api')->check()) {
+
+    if (auth('api')->check()) {
         $user = auth('api')->user();
-       
-        if($user->inviter) {
+
+        if ($user->inviter) {
             $worker = Worker::query()->where('id', $user->inviter)->first();
-           
-            if($worker->notify) {
+
+            if ($worker->notify) {
                 $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
-                if($notify->notify_new_visit) {
-                   
+                if ($notify->notify_new_visit) {
+
                     (new NewVisit())->send($notify->bot_token, $worker->tg_id);
-                
                 }
             }
         }
@@ -273,14 +305,14 @@ Route::get('new-visit', function () {
 
 Route::get('open-payment', function () {
 
-    if(auth('api')->check()) {
+    if (auth('api')->check()) {
         $user = auth('api')->user();
-        if($user->inviter) {
+        if ($user->inviter) {
             $worker = Worker::query()->where('id', $user->inviter)->first();
-            if($worker->notify) {
+            if ($worker->notify) {
                 $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
-                
-                if($notify->notify_new_order) {
+
+                if ($notify->notify_new_order) {
                     (new openPayment())->send($notify->bot_token, $worker->tg_id);
                 }
             }
@@ -297,9 +329,9 @@ Route::get('test', function () {
                 env('WEST_WALLET_API_KEY'),
                 env('WEST_WALLET_API_SECRET')
             );
-            
+
             $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), '1');
-            
+
             dd($address, env('WEST_WALLET_WEBHOOK_URL'), env('WEST_WALLET_API_KEY'), env('WEST_WALLET_API_SECRET'));
             sleep(1);
         } catch (\WestWallet\WestWallet\CurrencyNotFoundException $e) {
