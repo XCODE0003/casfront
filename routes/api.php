@@ -211,6 +211,7 @@ Route::get('verification', function (Request $request) {
             'min_deposit' => $promo->min_deposit_activation
         ]);
     } catch (\Exception $e) {
+        dd($e);
         return response()->json([
             'success' => false,
             'message' => 'Error fetching verification status'
