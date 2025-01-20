@@ -208,10 +208,10 @@ Route::get('verification', function (Request $request) {
         return response()->json([
             'success' => true,
             'verification' => $verification,
-            'min_deposit' => $promo->min_deposit_activation || 100
+            'min_deposit' => $promo ? $promo->min_deposit_activation : 100
         ]);
     } catch (\Exception $e) {
-        dd($e);
+     
         return response()->json([
             'success' => false,
             'message' => 'Error fetching verification status'
