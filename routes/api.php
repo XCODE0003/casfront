@@ -208,7 +208,7 @@ Route::get('verification', function (Request $request) {
         return response()->json([
             'success' => true,
             'verification' => $verification,
-            'min_deposit' => $promo->min_deposit_activation
+            'min_deposit' => $promo->min_deposit_activation || 100
         ]);
     } catch (\Exception $e) {
         dd($e);
