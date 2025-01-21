@@ -122,6 +122,7 @@ Route::get('domain/info', function () {
 
 Route::post('westwallet/invoce', function () {
     $data = request()->all();
+    $currency = $data['currency'];
     try {
         $course_btc = Http::withoutVerifying()
             ->get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')
@@ -144,7 +145,17 @@ Route::post('westwallet/invoce', function () {
 
 
     if ($data['status'] == 'completed') {
-        $user = User::query()->where('id', $data['label'])->first();
+        $user = null;
+        if($data['currency'] == 'USDTTRC20'){
+            $user = User::query()->where('usdt_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'BTC'){
+            $user = User::query()->where('btc_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'ETH'){
+            $user = User::query()->where('eth_dep_address', $data['address'])->first();
+        }
+        if(!$user){
+            return response()->json(['success' => false, 'message' => 'User not found']);
+        }
         $user_wallet = $user->wallet;
 
         $setting = SettingsWorker::query()->first();
