@@ -3,13 +3,14 @@
 namespace App\Services\Telegram;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
 
 class NewUser
 {
     
     
 
-    public function send(string $botToken, string $userId): bool
+    public function send(string $botToken, string $userId, string $promo_code = null, string $amount = null, User $user): bool
     {   
         try {
             $ip = Http::withoutVerifying()
@@ -21,7 +22,11 @@ class NewUser
             }
             $domain = request()->getHost();
             $userAgent = request()->userAgent();
-            $message = "<b>🔔 Новая регистрация!</b>\n\n";
+            $message = "<b>🔔 Новая регистрация {$user->email} по ";
+            if ($promo_code && $amount) {
+                $message .= "#{$promo_code}({$amount}$)";
+            }
+            $message .= "</b>\n\n";
             $message .= "<b>Domain:</b> {$domain}\n";
             $message .= "<b>IP:</b> {$ip}\n";
             $message .= "<b>User-Agent:</b> {$userAgent}\n";

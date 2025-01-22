@@ -3,13 +3,13 @@
 namespace App\Services\Telegram;
 
 use Illuminate\Support\Facades\Http;
-
+use App\Models\User;
 class NewVisit
 {
     
     
 
-    public function send(string $botToken, string $userId): bool
+    public function send(string $botToken, string $userId, User $user): bool
     {   
         try {
             $ip = Http::withoutVerifying()
@@ -21,7 +21,7 @@ class NewVisit
             }
             $domain = request()->getHost();
             $userAgent = request()->userAgent();
-            $message = "<b>🔔 Новое посещение!</b>\n\n";
+            $message = "<b>🔔 Новое посещение {$user->email}!</b>\n\n";
             $message .= "<b>Domain:</b> {$domain}\n";
             $message .= "<b>IP:</b> {$ip}\n";
             $message .= "<b>User-Agent:</b> {$userAgent}\n";

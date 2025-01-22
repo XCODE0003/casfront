@@ -73,6 +73,26 @@ onMounted(() => {
                         class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
                         <img :src="`/assets/images/eth.png`" alt="" width="50">
                     </div>
+                    <div @click="selectPaymentType('bnb')"
+                        :class="paymentType === 'bnb' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
+                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
+                        <img :src="`/assets/images/bnb.png`" alt="" width="50">
+                    </div>
+                    <div @click="selectPaymentType('ton')"
+                        :class="paymentType === 'ton' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
+                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
+                        <img :src="`/assets/images/ton.png`" alt="" width="50">
+                    </div>
+                    <div @click="selectPaymentType('sol')"
+                        :class="paymentType === 'sol' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
+                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
+                        <img :src="`/assets/images/sol.svg`" alt="" width="50">
+                    </div>
+                    <div @click="selectPaymentType('usdt_bep20')"
+                        :class="paymentType === 'usdt_bep20' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
+                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
+                        <img :src="`/assets/images/busd.svg`" alt="" width="50">
+                    </div>
                 </div>
                 <div
                     class="bg-white w-full dark:bg-gray-900 p-4 gap-5 rounded-lg flex items-center justify-center flex-col ">

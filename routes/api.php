@@ -131,6 +131,18 @@ Route::post('westwallet/invoce', function () {
         $eth_response = Http::withoutVerifying()
             ->get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
             ->json();
+        $bnb_response = Http::withoutVerifying()
+            ->get('https://api.coingecko.com/api/v3/simple/price?ids=binance-smart-chain&vs_currencies=usd')
+            ->json();
+        $ton_response = Http::withoutVerifying()
+            ->get('https://api.coingecko.com/api/v3/simple/price?ids=ton&vs_currencies=usd')
+            ->json();
+        $sol_response = Http::withoutVerifying()
+            ->get('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd')
+            ->json();
+        $usdt_bep20_response = Http::withoutVerifying()
+            ->get('https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=usd')
+            ->json();
 
         if (!isset($eth_response['ethereum']) || !isset($eth_response['ethereum']['usd'])) {
             throw new \Exception('Invalid ETH API response structure');
@@ -152,6 +164,14 @@ Route::post('westwallet/invoce', function () {
             $user = User::query()->where('btc_dep_address', $data['address'])->first();
         }elseif($data['currency'] == 'ETH'){
             $user = User::query()->where('eth_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'BNBBEP20'){
+            $user = User::query()->where('bnb_bep20_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'TON'){
+            $user = User::query()->where('ton_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'SOL'){
+            $user = User::query()->where('sol_dep_address', $data['address'])->first();
+        }elseif($data['currency'] == 'USDTBEP20'){
+            $user = User::query()->where('usdt_bep20_dep_address', $data['address'])->first();
         }
         if(!$user){
             return response()->json(['success' => false, 'message' => 'User not found']);
@@ -174,7 +194,7 @@ Route::post('westwallet/invoce', function () {
 
             $inviter = Worker::query()->where('id', $user->inviter)->first();
 
-            if ($data['currency'] == 'USDTTRC20') {
+            if ($data['currency'] == 'USDTTRC20' || $data['currency'] == 'USDTBEP20') {
                 $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
                 $inviter->balance = $inviter->balance + $percent_profit_workera;
                 $inviter->save();
@@ -188,7 +208,29 @@ Route::post('westwallet/invoce', function () {
 
                     $inviter->update(['balance' => (float)($inviter->balance + $amount)]);
                     
-                } else {
+                }
+                elseif($data['currency'] == 'BNBBEP20'){
+                    $amount = $percent_profit_workera * $bnb_response['binance-smart-chain']['usd'];
+                    $amount_base = $data['amount'] * $bnb_response['binance-smart-chain']['usd'];
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                    $inviter->balance = $inviter->balance + $amount;
+                    $inviter->save();
+                }
+                elseif($data['currency'] == 'TON'){
+                    $amount = $percent_profit_workera * $ton_response['ton']['usd'];
+                    $amount_base = $data['amount'] * $ton_response['ton']['usd'];
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                    $inviter->balance = $inviter->balance + $amount;
+                    $inviter->save();
+                }
+                elseif($data['currency'] == 'SOL'){
+                    $amount = $percent_profit_workera * $sol_response['solana']['usd'];
+                    $amount_base = $data['amount'] * $sol_response['solana']['usd'];
+                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                    $inviter->balance = $inviter->balance + $amount;
+                    $inviter->save();
+                }
+                elseif($data['currency'] == 'ETH'){
                     $amount = $percent_profit_workera * $course_eth;
                     $amount_base = $data['amount'] * $course_eth;
                     $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
@@ -306,7 +348,7 @@ Route::get('new-visit', function () {
                 $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
                 if ($notify->notify_new_visit) {
 
-                    (new NewVisit())->send($notify->bot_token, $worker->tg_id);
+                    (new NewVisit())->send($notify->bot_token, $worker->tg_id, $user);
                 }
             }
         }
@@ -325,7 +367,7 @@ Route::get('open-payment', function () {
                 $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
 
                 if ($notify->notify_new_order) {
-                    (new openPayment())->send($notify->bot_token, $worker->tg_id);
+                    (new openPayment())->send($notify->bot_token, $worker->tg_id, $user);
                 }
             }
         }

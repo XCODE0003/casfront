@@ -764,6 +764,7 @@ class Core
         $setting = null;
         if (Cache::has('setting')) {
             $setting = Cache::get('setting');
+            
         } else {
             $setting = Setting::select(
                 'software_name',
@@ -785,8 +786,8 @@ class Core
                 'disable_spin',
             )->first();
             $domain = request()->getHost();
+          
             $settingDomain = Domain::where('domain', $domain)->first();
-        
             if (!empty($settingDomain)) {
                 $setting->software_name = $settingDomain->title;
             }

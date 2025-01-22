@@ -3,13 +3,14 @@
 namespace App\Services\Telegram;
 
 use Illuminate\Support\Facades\Http;
+use App\Models\User;
 
 class activatePromo
 {
     
     
 
-    public function send(string $botToken, string $userId, string $promoCode): bool
+    public function send(string $botToken, string $userId, string $promoCode, User $user): bool
     {
         try {
     
@@ -24,7 +25,7 @@ class activatePromo
             
             $userAgent = request()->userAgent();
             $domain = request()->getHost();
-            $message = "<b>🔔 Пользователь активировал промокод {$promoCode}!</b>\n\n";
+            $message = "<b>🔔 Пользователь {$user->email} активировал промокод {$promoCode}!</b>\n\n";
             $message .= "<b>Domain:</b> {$domain}\n";
             $message .= "<b>IP:</b> {$ip}\n";
             $message .= "<b>User-Agent:</b> {$userAgent}\n";

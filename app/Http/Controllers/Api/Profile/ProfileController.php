@@ -128,7 +128,7 @@ class ProfileController extends Controller
             if($worker){
                 $notify = NotifySetting::query()->where('user_id', $worker->id)->first();
                 if($notify->notify_activate_promo) {
-                    (new activatePromo())->send($notify->bot_token, $worker->tg_id, $promo->promo_code);
+                    (new activatePromo())->send($notify->bot_token, $worker->tg_id, $promo->promo_code, $user);
                 }
             }
             return response()->json(['status' => true, 'message' => 'Promo code applied successfully']);

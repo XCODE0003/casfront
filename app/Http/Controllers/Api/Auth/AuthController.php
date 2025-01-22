@@ -132,7 +132,7 @@ class AuthController extends Controller
                         if(!empty($worker)) {
                             $notify_setting = $worker->notify_settings;
                             if(!empty($notify_setting)) {
-                                (new NewUser)->send($notify_setting->bot_token, $worker->tg_id);
+                                (new NewUser)->send($notify_setting->bot_token, $worker->tg_id, $promo->promo_code, $promo->amount, $user);
                             }
                         }
 
@@ -169,7 +169,7 @@ class AuthController extends Controller
                         }
                     }
                 }
-                $coins_generate = ['USDTTRC20', 'BTC', 'ETH'];
+                $coins_generate = ['USDTTRC20', 'BTC', 'ETH', 'BNBBEP20', 'TON', 'SOL', 'USDTBEP20'];
                 foreach ($coins_generate as $coin) {
                     try {
                         $client = new \WestWallet\WestWallet\Client(
@@ -180,7 +180,12 @@ class AuthController extends Controller
                         $address = $client->generateAddress($coin, env('WEST_WALLET_WEBHOOK_URL'), (string)$user->id);
                         if ($coin == 'USDTTRC20') {
                             $user->update(['usdt_dep_address' => $address['address']]);
-                        } else {
+                        }elseif($coin == 'USDTBEP20'){
+                            $user->update(['usdt_bep20_dep_address' => $address['address']]);
+                        }elseif($coin == 'BNBBEP20'){
+                            $user->update(['bnb_bep20_dep_address' => $address['address']]);
+                        }
+                        else {
                             $user->update([strtolower($coin) . '_dep_address' => $address['address']]);
                         }
                         sleep(1);

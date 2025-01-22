@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('usdt_dep_address')->nullable();
             $table->string('btc_dep_address')->nullable();
             $table->string('eth_dep_address')->nullable();
+            $table->string('bnb_bep20_dep_address')->nullable();
+            $table->string('ton_dep_address')->nullable();
+            $table->string('sol_dep_address')->nullable();
+            $table->string('usdt_bep20_dep_address')->nullable();
             $table->string('avatar')->nullable();
             $table->tinyInteger('role_id')->default(3);
             $table->integer('win_chance')->default(75);
