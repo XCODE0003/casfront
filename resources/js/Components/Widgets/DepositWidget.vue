@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/Stores/Auth.js';
+import { ref, onMounted, watch } from "vue";
+import { useAuthStore } from "@/Stores/Auth.js";
 import QRCodeVue3 from "qrcode-vue3";
-import  HttpApi  from '@/Services/HttpApi.js';
-import { useToast } from 'vue-toastification';
+import HttpApi from "@/Services/HttpApi.js";
+import { useToast } from "vue-toastification";
 const _toast = useToast();
 const paymentType = ref(null);
 
@@ -12,59 +12,53 @@ const authStore = useAuthStore();
 const user = authStore.user;
 function selectPaymentType(type) {
     paymentType.value = type;
-
-
 }
 const promoCode = ref(null);
 function applyPromo() {
-    HttpApi.post('profile/apply-promo', {
-        code: promoCode.value
-    }).then(response => {
-        _toast.success(response.data.message);
-    }).catch(error => {
-        _toast.error(error.response.data.message);
-    })  ;
+    HttpApi.post("profile/apply-promo", {
+        code: promoCode.value,
+    })
+        .then((response) => {
+            _toast.success(response.data.message);
+        })
+        .catch((error) => {
+            _toast.error(error.response.data.message);
+        });
 }
 onMounted(() => {
-    selectPaymentType('usdt');
-})
+    selectPaymentType("usdt");
+});
 
 watch(paymentType, () => {
-
-    if (paymentType.value === 'usdt') {
+    if (paymentType.value === "usdt") {
         wallet.value = user.usdt_dep_address;
     }
-    if (paymentType.value === 'btc') {
+    if (paymentType.value === "btc") {
         wallet.value = user.btc_dep_address;
     }
-    if (paymentType.value === 'eth') {
+    if (paymentType.value === "eth") {
         wallet.value = user.eth_dep_address;
     }
-    if (paymentType.value === 'bnb') {
-        wallet.value = user.bnb_dep_address;
-    }
-    if (paymentType.value === 'bnb_bep20') {
+    if (paymentType.value === "bnb") {
         wallet.value = user.bnb_bep20_dep_address;
     }
-    if (paymentType.value === 'ton') {
+
+    if (paymentType.value === "ton") {
         wallet.value = user.ton_dep_address;
     }
-    if (paymentType.value === 'sol') {
+    if (paymentType.value === "sol") {
         wallet.value = user.sol_dep_address;
     }
-    if (paymentType.value === 'usdt_bep20') {
+    if (paymentType.value === "usdt_bep20") {
         wallet.value = user.usdt_bep20_dep_address;
     }
     console.log(wallet.value);
-})
+});
 function copyWallet() {
     navigator.clipboard.writeText(wallet.value);
 }
 
-onMounted(() => {
-   
-})
-
+onMounted(() => {});
 </script>
 
 <template>
@@ -72,65 +66,158 @@ onMounted(() => {
         <div>
             <div class="flex flex-col gap-3">
                 <h2 class="text-2xl text-center">Deposit</h2>
-                <div class="flex  p-2 bg-white dark:bg-gray-900  rounded-lg items-center justify-center gap-3">
-                    <div @click="selectPaymentType('usdt')"
-                        :class="paymentType === 'usdt' ? 'border cursor-default border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/usdt.png`" alt="" width="50">
+                <div
+                    class="flex p-2 bg-white dark:bg-gray-900 rounded-lg items-center justify-center gap-3"
+                >
+                    <div
+                        @click="selectPaymentType('usdt')"
+                        :class="
+                            paymentType === 'usdt'
+                                ? 'border cursor-default border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/usdt.png`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('btc')"
-                        :class="paymentType === 'btc' ? 'border cursor-default border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/btc.png`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('btc')"
+                        :class="
+                            paymentType === 'btc'
+                                ? 'border cursor-default border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/btc.png`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('eth')"
-                        :class="paymentType === 'eth' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/eth.png`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('eth')"
+                        :class="
+                            paymentType === 'eth'
+                                ? 'border border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/eth.png`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('bnb')"
-                        :class="paymentType === 'bnb' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/bnb.png`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('bnb')"
+                        :class="
+                            paymentType === 'bnb'
+                                ? 'border border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/bnb.png`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('ton')"
-                        :class="paymentType === 'ton' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/ton.png`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('ton')"
+                        :class="
+                            paymentType === 'ton'
+                                ? 'border border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/ton.png`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('sol')"
-                        :class="paymentType === 'sol' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/sol.svg`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('sol')"
+                        :class="
+                            paymentType === 'sol'
+                                ? 'border border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/sol.svg`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
-                    <div @click="selectPaymentType('usdt_bep20')"
-                        :class="paymentType === 'usdt_bep20' ? 'border border-green-400' : 'border border-transparent cursor-pointer'"
-                        class="flex border  items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
-                        <img :src="`/assets/images/busd.svg`" alt="" width="50">
+                    <div
+                        @click="selectPaymentType('usdt_bep20')"
+                        :class="
+                            paymentType === 'usdt_bep20'
+                                ? 'border border-green-400'
+                                : 'border border-transparent cursor-pointer'
+                        "
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
+                    >
+                        <img
+                            :src="`/assets/images/busd.svg`"
+                            alt=""
+                            width="50"
+                        />
                     </div>
                 </div>
                 <div
-                    class="bg-white w-full dark:bg-gray-900 p-4 gap-5 rounded-lg flex items-center justify-center flex-col ">
-                    <h2 class="text-lg text-center">Send the amount you want to deposit to the address below</h2>
-                    <QRCodeVue3 :value="wallet" v-if="wallet" :backgroundOptions="{ color: '#1C1E22' }"
-                        :cornersSquareOptions="{ type: 'extra-rounded', color: '#fff' }"
-                        :cornersDotOptions="{ type: 'dots', color: '#fff' }" :width="200" :height="200" :dotsOptions="{
+                    class="bg-white w-full dark:bg-gray-900 p-4 gap-5 rounded-lg flex items-center justify-center flex-col"
+                >
+                    <h2 class="text-lg text-center">
+                        Send the amount you want to deposit to the address below
+                    </h2>
+                    <QRCodeVue3
+                        :value="wallet"
+                        v-if="wallet"
+                        :backgroundOptions="{ color: '#1C1E22' }"
+                        :cornersSquareOptions="{
+                            type: 'extra-rounded',
+                            color: '#fff',
+                        }"
+                        :cornersDotOptions="{ type: 'dots', color: '#fff' }"
+                        :width="200"
+                        :height="200"
+                        :dotsOptions="{
                             type: 'dots',
                             color: '#fff',
-
-                        }" :qr-options="{
+                        }"
+                        :qr-options="{
                             errorCorrectionLevel: 'H',
                             type: 'image/png',
-                            quality: 1
-                        }" />
+                            quality: 1,
+                        }"
+                    />
 
-                    <div class="flex  items-center justify-center gap-3 ">
-
-                        <div class="flex items-center w-full justify-center gap-3">
-                            <input type="text" class="input w-full" disabled :value="wallet">
+                    <div class="flex items-center justify-center gap-3">
+                        <div
+                            class="flex items-center w-full justify-center gap-3"
+                        >
+                            <input
+                                type="text"
+                                class="input w-full"
+                                disabled
+                                :value="wallet"
+                            />
                             <div class="flex items-center justify-center gap-3">
-                                <button @click="copyWallet"
-                                    class="ui-button-blue active:translate-y-1 transition-all rounded-lg">
+                                <button
+                                    @click="copyWallet"
+                                    class="ui-button-blue active:translate-y-1 transition-all rounded-lg"
+                                >
                                     <i class="fa-solid fa-copy"></i>
                                 </button>
                             </div>
@@ -140,12 +227,21 @@ onMounted(() => {
                 <div class="flex flex-col gap-3">
                     <h2 class="text-lg text-center">Promo code</h2>
                     <div class="flex items-center justify-center gap-2">
-                        <input type="text" class="input w-full" v-model="promoCode" placeholder="Enter your promo code">
-                        <button @click="applyPromo" class="ui-button-blue rounded-lg">Apply</button>
+                        <input
+                            type="text"
+                            class="input w-full"
+                            v-model="promoCode"
+                            placeholder="Enter your promo code"
+                        />
+                        <button
+                            @click="applyPromo"
+                            class="ui-button-blue rounded-lg"
+                        >
+                            Apply
+                        </button>
                     </div>
                 </div>
             </div>
-
         </div>
         <!-- <div
             v-if="
@@ -202,7 +298,9 @@ onMounted(() => {
                 {{ $t("Pay With Stripe") }}
             </button>
         </div> -->
-        <div v-if="paymentType === 'pix' && setting && setting.suitpay_is_enable">
+        <div
+            v-if="paymentType === 'pix' && setting && setting.suitpay_is_enable"
+        >
             <div v-if="showPixQRCode && wallet" class="flex flex-col">
                 <div class="w-full p-4 bg-white dark:bg-gray-700 rounded mb-3">
                     <div class="flex justify-between">
@@ -239,31 +337,50 @@ onMounted(() => {
                             Se preferir, você pode pagá-lo copiando e colando o
                             código abaixo:
                         </p>
-                        <input id="pixcopiaecola" type="text" class="input" v-model="qrcodecopypast" />
+                        <input
+                            id="pixcopiaecola"
+                            type="text"
+                            class="input"
+                            v-model="qrcodecopypast"
+                        />
                     </div>
 
                     <div class="mt-5 w-full flex items-center justify-center">
-                        <button @click.prevent="copyQRCode" type="button" class="ui-button-blue w-full">
+                        <button
+                            @click.prevent="copyQRCode"
+                            type="button"
+                            class="ui-button-blue w-full"
+                        >
                             <span class="uppercase font-semibold text-sm">{{
                                 $t("Copy code")
-                                }}</span>
+                            }}</span>
                         </button>
                     </div>
                 </div>
             </div>
             <div v-if="!showPixQRCode">
-                <div v-if="
-                    setting != null && wallet != null && isLoading === false
-                " class="flex flex-col w-full">
+                <div
+                    v-if="
+                        setting != null && wallet != null && isLoading === false
+                    "
+                    class="flex flex-col w-full"
+                >
                     <form action="" @submit.prevent="submitQRCode">
                         <div class="flex items-center justify-between">
                             <p class="text-gray-500">
                                 {{ $t("Deposit Currency") }}
                             </p>
-                            <button type="button" class="flex justify-center items-center mr-3 pt-1">
+                            <button
+                                type="button"
+                                class="flex justify-center items-center mr-3 pt-1"
+                            >
                                 <div>{{ wallet.currency }}</div>
                                 <div class="mr-2 ml-2">
-                                    <img :src="`/assets/images/coin/BRL.png`" alt="" width="32" />
+                                    <img
+                                        :src="`/assets/images/coin/BRL.png`"
+                                        alt=""
+                                        width="32"
+                                    />
                                 </div>
                                 <div class="ml-2 text-sm">
                                     <i class="fa-solid fa-chevron-down"></i>
@@ -275,9 +392,15 @@ onMounted(() => {
                             <p class="mb-2 text-gray-500">
                                 {{ $t("Payment methods") }}
                             </p>
-                            <div class="w-full flex items-center justify-between bg-white dark:bg-gray-900 rounded p-2">
+                            <div
+                                class="w-full flex items-center justify-between bg-white dark:bg-gray-900 rounded p-2"
+                            >
                                 <div class="flex w-full items-center">
-                                    <img :src="`/assets/images/pix.png`" alt="" width="100" />
+                                    <img
+                                        :src="`/assets/images/pix.png`"
+                                        alt=""
+                                        width="100"
+                                    />
                                     <span class="ml-3">PIX</span>
                                 </div>
                                 <div class="w-8">
@@ -303,12 +426,20 @@ onMounted(() => {
                                 }}
                             </p>
                             <div
-                                class="w-full flex items-center justify-between bg-white dark:bg-gray-900 rounded py-1">
+                                class="w-full flex items-center justify-between bg-white dark:bg-gray-900 rounded py-1"
+                            >
                                 <div class="flex w-full">
-                                    <input type="text" v-model="deposit.amount"
+                                    <input
+                                        type="text"
+                                        v-model="deposit.amount"
                                         class="appearance-none border border-gray-300 rounded-md bg-transparent border-none w-full"
-                                        :min="setting.min_deposit" :max="setting.max_deposit" :placeholder="$t('Enter the value here')
-                                            " required />
+                                        :min="setting.min_deposit"
+                                        :max="setting.max_deposit"
+                                        :placeholder="
+                                            $t('Enter the value here')
+                                        "
+                                        required
+                                    />
                                 </div>
                                 <!--                                <div v-if="deposit.amount > 0" class="text-green-500 w-80 font-bold text-right">-->
                                 <!--                                    Extra + {{ state.currencyFormat(parseFloat((deposit.amount/setting.initial_bonus * 100)) + parseFloat(deposit.amount), wallet.currency) }}-->
@@ -319,7 +450,9 @@ onMounted(() => {
                         <div class="mt-3 text-gray-500">
                             <p>
                                 {{ $t("Get an extra bonus") }}
-                                <strong class="text-white font-bold">{{ setting.initial_bonus }}%</strong>
+                                <strong class="text-white font-bold"
+                                    >{{ setting.initial_bonus }}%</strong
+                                >
                                 {{ $t("on a minimum deposit of") }}
                                 <strong class="text-white font-bold">{{
                                     state.currencyFormat(
@@ -331,13 +464,17 @@ onMounted(() => {
                         </div>
 
                         <div class="mt-5 item-selected">
-                            <div @click.prevent="
-                                setAmount(parseFloat(setting.min_deposit))
-                                " class="item" :class="{
+                            <div
+                                @click.prevent="
+                                    setAmount(parseFloat(setting.min_deposit))
+                                "
+                                class="item"
+                                :class="{
                                     active:
                                         selectedAmount ===
                                         parseFloat(setting.min_deposit),
-                                }">
+                                }"
+                            >
                                 <button type="button">
                                     {{
                                         state.currencyFormat(
@@ -346,75 +483,121 @@ onMounted(() => {
                                         )
                                     }}
                                 </button>
-                                <div v-if="
-                                    selectedAmount ===
-                                    parseFloat(setting.min_deposit)
-                                " class="ratio">
+                                <div
+                                    v-if="
+                                        selectedAmount ===
+                                        parseFloat(setting.min_deposit)
+                                    "
+                                    class="ratio"
+                                >
                                     +{{ setting.initial_bonus }}%
                                 </div>
-                                <img v-if="
-                                    selectedAmount ===
-                                    parseFloat(setting.min_deposit)
-                                " class="img-check" :src="`/assets/images/check.webp`" alt="" />
+                                <img
+                                    v-if="
+                                        selectedAmount ===
+                                        parseFloat(setting.min_deposit)
+                                    "
+                                    class="img-check"
+                                    :src="`/assets/images/check.webp`"
+                                    alt=""
+                                />
                             </div>
-                            <div @click.prevent="setAmount(50.0)" class="item"
-                                :class="{ active: selectedAmount === 50.0 }">
+                            <div
+                                @click.prevent="setAmount(50.0)"
+                                class="item"
+                                :class="{ active: selectedAmount === 50.0 }"
+                            >
                                 <button type="button">
                                     {{ wallet.symbol }} 50,00
                                 </button>
-                                <div v-if="selectedAmount === 50.0" class="ratio">
+                                <div
+                                    v-if="selectedAmount === 50.0"
+                                    class="ratio"
+                                >
                                     +{{ setting.initial_bonus }}%
                                 </div>
-                                <img v-if="selectedAmount === 50.0" class="img-check" :src="`/assets/images/check.webp`"
-                                    alt="" />
+                                <img
+                                    v-if="selectedAmount === 50.0"
+                                    class="img-check"
+                                    :src="`/assets/images/check.webp`"
+                                    alt=""
+                                />
                             </div>
-                            <div @click.prevent="setAmount(200.0)" class="item"
-                                :class="{ active: selectedAmount === 200.0 }">
+                            <div
+                                @click.prevent="setAmount(200.0)"
+                                class="item"
+                                :class="{ active: selectedAmount === 200.0 }"
+                            >
                                 <button type="button">
                                     {{ wallet.symbol }} 200,00
                                 </button>
-                                <div v-if="selectedAmount === 200.0" class="ratio">
+                                <div
+                                    v-if="selectedAmount === 200.0"
+                                    class="ratio"
+                                >
                                     +{{ setting.initial_bonus }}%
                                 </div>
-                                <img v-if="selectedAmount === 200.0" class="img-check"
-                                    :src="`/assets/images/check.webp`" alt="" />
+                                <img
+                                    v-if="selectedAmount === 200.0"
+                                    class="img-check"
+                                    :src="`/assets/images/check.webp`"
+                                    alt=""
+                                />
                             </div>
                         </div>
 
                         <div class="mt-5">
                             <p class="text-gray-500">CPF/CNPJ</p>
-                            <input type="text" v-model="deposit.cpf" v-maska data-maska="[
+                            <input
+                                type="text"
+                                v-model="deposit.cpf"
+                                v-maska
+                                data-maska="[
                                             '###.###.###-##',
                                             '##.###.###/####-##'
                                           ]"
                                 class="mt-2 border-none text-gray-600 placeholder:text-gray-300 dark:text-gray-200 dark:placeholder:text-gray-500 w-full bg-white dark:bg-gray-900 font-sans transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-75 px-2 text-sm leading-5 rounded py-3"
-                                placeholder="Digite o CPF" required />
+                                placeholder="Digite o CPF"
+                                required
+                            />
                         </div>
 
-                        <div class="mt-5 w-full flex items-center justify-center">
+                        <div
+                            class="mt-5 w-full flex items-center justify-center"
+                        >
                             <button type="submit" class="ui-button-blue w-full">
                                 <span class="uppercase font-semibold text-sm">{{
                                     $t("Deposit")
-                                    }}</span>
+                                }}</span>
                             </button>
                         </div>
                     </form>
                 </div>
-                <div v-if="isLoading" role="status" class="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
-                    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-600"
-                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div
+                    v-if="isLoading"
+                    role="status"
+                    class="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2"
+                >
+                    <svg
+                        aria-hidden="true"
+                        class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
                         <path
                             d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="currentColor" />
+                            fill="currentColor"
+                        />
                         <path
                             d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentFill" />
+                            fill="currentFill"
+                        />
                     </svg>
                     <span class="sr-only">{{ $t("Loading") }}...</span>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 <!-- 
