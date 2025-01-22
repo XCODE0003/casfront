@@ -40,6 +40,21 @@ watch(paymentType, () => {
     if (paymentType.value === 'eth') {
         wallet.value = user.eth_dep_address;
     }
+    if (paymentType.value === 'bnb') {
+        wallet.value = user.bnb_dep_address;
+    }
+    if (paymentType.value === 'bnb_bep20') {
+        wallet.value = user.bnb_bep20_dep_address;
+    }
+    if (paymentType.value === 'ton') {
+        wallet.value = user.ton_dep_address;
+    }
+    if (paymentType.value === 'sol') {
+        wallet.value = user.sol_dep_address;
+    }
+    if (paymentType.value === 'usdt_bep20') {
+        wallet.value = user.usdt_bep20_dep_address;
+    }
     console.log(wallet.value);
 })
 function copyWallet() {
