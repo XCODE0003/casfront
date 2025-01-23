@@ -72,15 +72,26 @@ export const useMinesStore = defineStore('mines', {
                         : Object.values(response.data.game);
                     this.next_win = response.data.next_win;
                 } else {
-                    this.result = response.data.result;
-                    this.game = response.data.game;
+                    if (response.data.result) {
+                        this.result = Array.isArray(response.data.result)
+                            ? response.data.result
+                            : Object.values(response.data.result);
+                    }
+                    
+                    const walletStore = useWalletStore();
+                    walletStore.fetchWallet();
+                    
                     setTimeout(() => {
+                        this.activeGame = false;
                         this.game = null;
                         this.result = Array(25).fill().map(() => ({ picked: false, mine: false }));
-                        this.activeGame = false;
-                    }, 1000);
-
+                    }, 2000);
                 }
+            }).catch(error => {
+                console.error('Error in pick action:', error);
+                this.result = Array(25).fill().map(() => ({ picked: false, mine: false }));
+                this.activeGame = false;
+                this.game = null;
             });
         },
         addMines() {
@@ -109,18 +120,27 @@ export const useMinesStore = defineStore('mines', {
         getIsLoading: (state) => state.isLoading,
         getGameSettings: (state) => state.game_settings,
         getResult: (state) => (index) => {
-            if (!state.result || !Array.isArray(state.result)) return null;
-            const cell = state.result[index];
-            if (!cell) return null;
-            if (cell.picked === true) {
-                return cell.mine ? false : true;
+            if (!state.result?.[index]) return null;
+            
+            if (state.result.some(cell => cell.picked && cell.mine)) {
+                if (state.result[index].mine) return false;
+                if (state.result[index].picked) return true;
+                return null;
             }
-            return null;
+            
+            return state.result[index].picked ? !state.result[index].mine : null;
         },
         getCellClass: (state) => (index) => {
-            const cell = state.result[index];
-            if (!cell?.picked) return '';
-
+            const cell = state.result?.[index];
+            if (!cell) return '';
+            
+            if (state.result.some(c => c.picked && c.mine)) {
+                if (cell.mine) return '_active _lose';
+                if (cell.picked) return '_active _win';
+                return '';
+            }
+            
+            if (!cell.picked) return '';
             return cell.mine ? '_active _lose' : '_active _win';
         },
     },

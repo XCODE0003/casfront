@@ -123,6 +123,7 @@ Route::get('domain/info', function () {
 Route::post('westwallet/invoce', function () {
     $data = request()->all();
     $currency = $data['currency'];
+    \Log::info($data);
     try {
         $course_btc = Http::withoutVerifying()
             ->get('https://api.coindesk.com/v1/bpi/currentprice/BTC.json')
@@ -158,25 +159,27 @@ Route::post('westwallet/invoce', function () {
 
     if ($data['status'] == 'completed') {
         $user = null;
-        if($data['currency'] == 'USDTTRC20'){
+        if($data['currency'] == 'USDTTRC'){
             $user = User::query()->where('usdt_dep_address', $data['address'])->first();
         }elseif($data['currency'] == 'BTC'){
             $user = User::query()->where('btc_dep_address', $data['address'])->first();
         }elseif($data['currency'] == 'ETH'){
             $user = User::query()->where('eth_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'BNBBEP20'){
+        }elseif($data['currency'] == 'BNB20'){
             $user = User::query()->where('bnb_bep20_dep_address', $data['address'])->first();
         }elseif($data['currency'] == 'TON'){
             $user = User::query()->where('ton_dep_address', $data['address'])->first();
         }elseif($data['currency'] == 'SOL'){
             $user = User::query()->where('sol_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'USDTBEP20'){
+        }elseif($data['currency'] == 'USDTBEP'){
             $user = User::query()->where('usdt_bep20_dep_address', $data['address'])->first();
         }
         if(!$user){
             return response()->json(['success' => false, 'message' => 'User not found']);
         }
         $user_wallet = $user->wallet;
+        \Log::info($user_wallet);
+        \Log::info($user);
 
         $setting = SettingsWorker::query()->first();
     
