@@ -129,21 +129,20 @@ onMounted(() => {});
                             width="50"
                         />
                     </div>
-                    <div
+                    <!-- <div
                         @click="selectPaymentType('ton')"
                         :class="
                             paymentType === 'ton'
                                 ? 'border border-green-400'
                                 : 'border border-transparent cursor-pointer'
                         "
-                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center"
-                    >
+                        class="flex border items-center p-4 rounded-lg bg-white dark:bg-gray-900 justify-center">
                         <img
                             :src="`/assets/images/ton.png`"
                             alt=""
                             width="50"
                         />
-                    </div>
+                    </div> -->
                     <div
                         @click="selectPaymentType('sol')"
                         :class="
