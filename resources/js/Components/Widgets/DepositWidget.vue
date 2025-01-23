@@ -28,7 +28,15 @@ function applyPromo() {
 onMounted(() => {
     selectPaymentType("usdt");
 });
-
+const currencies = ref({
+    usdt: "USDT TRC20",
+    btc: "BTC",
+    eth: "ETH",
+    bnb: "BNB BEP20",
+    ton: "TON",
+    sol: "SOL",
+    usdt_bep20: "USDT BEP20",
+});
 watch(paymentType, () => {
     if (paymentType.value === "usdt") {
         wallet.value = user.usdt_dep_address;
@@ -65,7 +73,7 @@ onMounted(() => {});
     <div class="block">
         <div>
             <div class="flex flex-col gap-3">
-                <h2 class="text-2xl text-center">Deposit</h2>
+                <h2 class="text-2xl text-center">Deposit {{ currencies[paymentType] }}</h2>
                 <div
                     class="flex p-2 bg-white dark:bg-gray-900 rounded-lg items-center justify-center gap-3"
                 >

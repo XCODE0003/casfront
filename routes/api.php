@@ -201,6 +201,7 @@ Route::post('westwallet/invoce', function () {
                 $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
                 $inviter->balance = $inviter->balance + $percent_profit_workera;
                 $inviter->save();
+                
             } else {
 
                 if ($data['currency'] == 'BTC') {
