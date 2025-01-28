@@ -158,23 +158,8 @@ Route::post('westwallet/invoce', function () {
 
 
     if ($data['status'] == 'completed') {
-        $user = null;
-        if($data['currency'] == 'USDTTRC'){
-            $user = User::query()->where('usdt_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'BTC'){
-            $user = User::query()->where('btc_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'ETH'){
-            $user = User::query()->where('eth_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'BNB20'){
-            $user = User::query()->where('bnb_bep20_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'TON'){
-            $user = User::query()->where('ton_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'SOL'){
-            $user = User::query()->where('sol_dep_address', $data['address'])->first();
-        }elseif($data['currency'] == 'USDTBEP'){
-            $user = User::query()->where('usdt_bep20_dep_address', $data['address'])->first();
-        }
-        if(!$user){
+        $user = User::query()->where('id', $data['label'])->first();
+        if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found']);
         }
         $user_wallet = $user->wallet;
@@ -182,8 +167,12 @@ Route::post('westwallet/invoce', function () {
         \Log::info($user);
 
         $setting = SettingsWorker::query()->first();
-    
+
         $percent_profit_workera = ($data['amount'] * $setting->percent_profit_worker) / 100;
+        $deposit = Deposit::query()->where('payment_id', $data['id'])->first();
+        if ($deposit) {
+            return response()->json(['success' => false, 'message' => 'Deposit already exists']);
+        }
         Deposit::query()->create([
             'user_id' => $user->id,
             'amount' => $data['amount'],
@@ -192,61 +181,68 @@ Route::post('westwallet/invoce', function () {
             'status' => 'completed',
             'payment_id' => $data['id']
         ]);
+        if ($data['currency'] == 'USDTTRC20' || $data['currency'] == 'USDTBEP20') {
 
-        if ($user->inviter) {
-
-            $inviter = Worker::query()->where('id', $user->inviter)->first();
-
-            if ($data['currency'] == 'USDTTRC20' || $data['currency'] == 'USDTBEP20') {
-                $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
+            $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
+            if ($user->inviter) {
+                $inviter = Worker::query()->where('id', $user->inviter)->first();
                 $inviter->balance = $inviter->balance + $percent_profit_workera;
                 $inviter->save();
-                
-            } else {
+            }
+        } else {
 
-                if ($data['currency'] == 'BTC') {
-                    $amount = $percent_profit_workera * $course_btc;
-                    $amount_base = $data['amount'] * $course_btc;
+            if ($data['currency'] == 'BTC') {
+                $amount = $percent_profit_workera * $course_btc;
+                $amount_base = $data['amount'] * $course_btc;
 
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
-
-                    $inviter->update(['balance' => (float)($inviter->balance + $amount)]);
-                    
-                }
-                elseif($data['currency'] == 'BNBBEP20'){
-                    $amount = $percent_profit_workera * $bnb_response['binance-smart-chain']['usd'];
-                    $amount_base = $data['amount'] * $bnb_response['binance-smart-chain']['usd'];
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                if ($user->inviter) {
+                    $inviter = Worker::query()->where('id', $user->inviter)->first();
                     $inviter->balance = $inviter->balance + $amount;
                     $inviter->save();
                 }
-                elseif($data['currency'] == 'TON'){
-                    $amount = $percent_profit_workera * $ton_response['ton']['usd'];
-                    $amount_base = $data['amount'] * $ton_response['ton']['usd'];
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+            } elseif ($data['currency'] == 'BNBBEP20') {
+                $amount = $percent_profit_workera * $bnb_response['binance-smart-chain']['usd'];
+                $amount_base = $data['amount'] * $bnb_response['binance-smart-chain']['usd'];
+                $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                if ($user->inviter) {
+                    $inviter = Worker::query()->where('id', $user->inviter)->first();
                     $inviter->balance = $inviter->balance + $amount;
                     $inviter->save();
                 }
-                elseif($data['currency'] == 'SOL'){
-                    $amount = $percent_profit_workera * $sol_response['solana']['usd'];
-                    $amount_base = $data['amount'] * $sol_response['solana']['usd'];
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+            } elseif ($data['currency'] == 'TON') {
+                $amount = $percent_profit_workera * $ton_response['ton']['usd'];
+                $amount_base = $data['amount'] * $ton_response['ton']['usd'];
+                $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                if ($user->inviter) {
+                    $inviter = Worker::query()->where('id', $user->inviter)->first();
                     $inviter->balance = $inviter->balance + $amount;
                     $inviter->save();
                 }
-                elseif($data['currency'] == 'ETH'){
-                    $amount = $percent_profit_workera * $course_eth;
-                    $amount_base = $data['amount'] * $course_eth;
-                    $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+            } elseif ($data['currency'] == 'SOL') {
+                $amount = $percent_profit_workera * $sol_response['solana']['usd'];
+                $amount_base = $data['amount'] * $sol_response['solana']['usd'];
+                $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                if ($user->inviter) {
+                    $inviter = Worker::query()->where('id', $user->inviter)->first();
+                    $inviter->balance = $inviter->balance + $amount;
+                    $inviter->save();
+                }
+            } elseif ($data['currency'] == 'ETH') {
+                $amount = $percent_profit_workera * $course_eth;
+                $amount_base = $data['amount'] * $course_eth;
+                $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
+                if ($user->inviter) {
+                    $inviter = Worker::query()->where('id', $user->inviter)->first();
                     $inviter->balance = $inviter->balance + $amount;
                     $inviter->save();
                 }
             }
+        }
 
-            $notify_settings = NotifySetting::query()->where('user_id', $inviter->id)->first();
-            if ($notify_settings->notify_new_payment) {
-                (new NewDeposit())->send($notify_settings->bot_token, $inviter->tg_id, $data['amount'], $data['currency'], $user->email);
-            }
+        $notify_settings = NotifySetting::query()->where('user_id', $inviter->id)->first();
+        if ($notify_settings->notify_new_payment) {
+            (new NewDeposit())->send($notify_settings->bot_token, $inviter->tg_id, $data['amount'], $data['currency'], $user->email);
         }
     }
 
@@ -268,7 +264,7 @@ Route::get('verification', function (Request $request) {
             'min_deposit' => $promo ? $promo->min_deposit_activation : 100
         ]);
     } catch (\Exception $e) {
-     
+
         return response()->json([
             'success' => false,
             'message' => 'Error fetching verification status'
