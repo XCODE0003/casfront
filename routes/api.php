@@ -182,7 +182,7 @@ Route::post('westwallet/invoce', function () {
             'payment_id' => $data['id']
         ]);
         $inviter = null;
-        if ($data['currency'] == 'USDTTRC20' || $data['currency'] == 'USDTBEP20') {
+        if ($data['currency'] == 'USDTTRC' || $data['currency'] == 'USDTBEP') {
 
             $user_wallet->update(['balance' => $user_wallet->balance + $data['amount']]);
             if ($user->inviter) {
@@ -203,7 +203,7 @@ Route::post('westwallet/invoce', function () {
                     $inviter->balance = $inviter->balance + $amount;
                     $inviter->save();
                 }
-            } elseif ($data['currency'] == 'BNBBEP20') {
+            } elseif ($data['currency'] == 'BNB20') {
                 $amount = $percent_profit_workera * $bnb_response['binance-smart-chain']['usd'];
                 $amount_base = $data['amount'] * $bnb_response['binance-smart-chain']['usd'];
                 $user_wallet->update(['balance' => $user_wallet->balance + $amount_base]);
